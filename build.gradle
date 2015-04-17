@@ -9,10 +9,7 @@
 
 
 apply plugin: 'java'
-//apply plugin: 'idea'
-//apply plugin: 'maven'
-apply from: 'base.gradle'
-
+apply from: 'agentTasks.gradle'
 
 version='1.0'
 
@@ -21,13 +18,18 @@ repositories {
     maven {
         url "https://raw.github.com/Appdynamics/artifact-library/master/repo/"
     }
+    mavenCentral();
+
 //    maven {
 //        url "file:///vlab/maven/private-artifact-library/repo/"
 //    }
 }
 
-// no transitive Dependencies for compile only APIs
-configurations.compileOnly.transitive=false
+compileJava {
+    sourceCompatibility = 1.6
+    targetCompatibility = 1.6
+ //   options.bootClasspath = "/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Classes/classes.jar"
+}
 
 configurations {
     agentRuntime
@@ -43,24 +45,27 @@ dependencies {
 //    agentBinary "com.appdynamics:MachineAgent:4.0.0@zip"
 
 
+    compile 'org.snmp4j:snmp4j:1.10.1'
+
     //  compile "org.codehaus.jackson:jackson-mapper-asl:1.8.5"
 
     // need to add all Agent Libraries Due to a Bug in Idea this needs to be a copy of the above
     // agentRuntime project(":agentApi")
+    agentRuntime 'org.snmp4j:snmp4j:1.10.1'
 }
 
 
 generateMonitorXML {
-    agentDescription = "ApdexAgent"
+    agentDescription = "SnmpTrapReceiver"
     timeout = 120
-    agentName="apdexAgent"
-    mainClass = 'de.appdynamics.ace.apdex.agent.ApdexAgent'     //TODO enter the main class
-    classpath = "agent.jar"    // be carefull this is a hardcoded Name !!!
+    agentName="snmpAgent"
+    mainClass = 'de.appdynamics.extensions.snmpMonitor.SnmpAgent'     //TODO enter the main class
+    classpath = "snmpAgent.jar"    // be carefull this is a hardcoded Name !!!
 }
 
 
 jar {
-      archiveName="agent.jar"
+      archiveName="snmpAgent.jar"
 }
 
 
