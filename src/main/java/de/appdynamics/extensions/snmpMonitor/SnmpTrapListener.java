@@ -1,6 +1,7 @@
 package de.appdynamics.extensions.snmpMonitor;
 
 import de.appdynamics.extensions.snmpMonitor.cfg.SnmpTrapMonitorConfig;
+import org.apache.log4j.Logger;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -11,6 +12,8 @@ import java.util.Set;
 public class SnmpTrapListener {
     private final SnmpTrapMonitorConfig _cfg;
     private Set<SNMPMetricConsumer> _consumers = new HashSet<SNMPMetricConsumer>();
+
+    private static Logger logger = Logger.getLogger(SnmpTrapListener.class);
 
     public boolean isRunning() {
         return _running;
@@ -29,9 +32,15 @@ public class SnmpTrapListener {
     public void start() {
         _running =true;
         try {
-            //TODO :
+            logger.debug("started !!!!");
+
+            // TODO :
+            // create a snmp LISTENER (from the example)
+            // first TRY ... LOG OID from trap And the trap Debug message
 
 
+
+            logger.debug("stopped !!!!");
         }   finally {
             _running =false;
         }
