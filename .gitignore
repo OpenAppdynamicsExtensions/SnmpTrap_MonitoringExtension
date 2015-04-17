@@ -2,3 +2,5 @@
 .gradle/
 build/
 .gradletasknamecache
+.idea/
+*.iml

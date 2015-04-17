@@ -10,7 +10,7 @@
 
 apply plugin: 'java'
 //apply plugin: 'idea'
-apply plugin: 'maven'
+//apply plugin: 'maven'
 apply from: 'base.gradle'
 
 
@@ -21,9 +21,9 @@ repositories {
     maven {
         url "https://raw.github.com/Appdynamics/artifact-library/master/repo/"
     }
-    maven {
-        url "file:///vlab/maven/private-artifact-library/repo/"
-    }
+//    maven {
+//        url "file:///vlab/maven/private-artifact-library/repo/"
+//    }
 }
 
 // no transitive Dependencies for compile only APIs
@@ -38,16 +38,15 @@ configurations {
 dependencies {
     compile ("log4j:log4j:1.2.17")
     compile "com.appdynamics:machineagent:4.0.0"
-    agentBinary "com.appdynamics:MachineAgent:4.0.0@zip"
+
+//    DEFINE teh dependency for the sandbox environment
+//    agentBinary "com.appdynamics:MachineAgent:4.0.0@zip"
 
 
-    compile "org.codehaus.jackson:jackson-mapper-asl:1.8.5"
+    //  compile "org.codehaus.jackson:jackson-mapper-asl:1.8.5"
 
     // need to add all Agent Libraries Due to a Bug in Idea this needs to be a copy of the above
-    compile project(":agentApi")
-
-
-    agentRuntime project(":agentApi")
+    // agentRuntime project(":agentApi")
 }
 
 
@@ -55,7 +54,7 @@ generateMonitorXML {
     agentDescription = "ApdexAgent"
     timeout = 120
     agentName="apdexAgent"
-    mainClass = 'de.appdynamics.ace.apdex.agent.ApdexAgent'
+    mainClass = 'de.appdynamics.ace.apdex.agent.ApdexAgent'     //TODO enter the main class
     classpath = "agent.jar"    // be carefull this is a hardcoded Name !!!
 }
 
@@ -83,6 +82,8 @@ tasks.assemble.dependsOn(packageAgent)
 
 
 
+/*
+
 task installSandbox() {
     doLast {
         copy {
@@ -101,4 +102,7 @@ task installSandbox() {
 }
 
 tasks.installSandbox.dependsOn(packageAgent)
+
+*/
+
 tasks.packageAgent.dependsOn(jar)
