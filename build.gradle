@@ -57,7 +57,7 @@ dependencies {
 
 generateMonitorXML {
     agentDescription = "SnmpTrapReceiver"
-    timeout = 120
+    continuous = true;
     agentName="snmpAgent"
     mainClass = 'de.appdynamics.extensions.snmpMonitor.SnmpAgent'     //TODO enter the main class
     classpath = "snmpAgent.jar"    // be carefull this is a hardcoded Name !!!
