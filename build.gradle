@@ -46,12 +46,14 @@ dependencies {
 
 
     compile 'org.snmp4j:snmp4j:1.10.1'
+    compile 'com.esotericsoftware.yamlbeans:yamlbeans:1.06'
 
     //  compile "org.codehaus.jackson:jackson-mapper-asl:1.8.5"
 
     // need to add all Agent Libraries Due to a Bug in Idea this needs to be a copy of the above
     // agentRuntime project(":agentApi")
     agentRuntime 'org.snmp4j:snmp4j:1.10.1'
+    agentRuntime 'com.esotericsoftware.yamlbeans:yamlbeans:1.06'
 }
 
 

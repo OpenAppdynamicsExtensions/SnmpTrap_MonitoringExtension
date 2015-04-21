@@ -1,50 +1,96 @@
 package de.appdynamics.extensions.snmpMonitor;
 
+import com.esotericsoftware.yamlbeans.YamlReader;
 import de.appdynamics.extensions.snmpMonitor.cfg.SnmpTrapMonitorConfig;
 import org.apache.log4j.Logger;
+import org.snmp4j.*;
+import org.snmp4j.mp.MPv1;
+import org.snmp4j.mp.MPv2c;
+import org.snmp4j.smi.Address;
+import org.snmp4j.smi.GenericAddress;
+import org.snmp4j.smi.UdpAddress;
+import org.snmp4j.smi.VariableBinding;
+import org.snmp4j.transport.DefaultUdpTransportMapping;
+import org.snmp4j.util.MultiThreadedMessageDispatcher;
+import org.snmp4j.util.ThreadPool;
 
+import java.io.FileReader;
+import java.io.IOException;
+import java.net.UnknownHostException;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.Vector;
 
 /**
  * Created by stefan.marx on 17.04.15.
  */
-public class SnmpTrapListener {
+public class SnmpTrapListener implements CommandResponder{
+
     private final SnmpTrapMonitorConfig _cfg;
     private Set<SNMPMetricConsumer> _consumers = new HashSet<SNMPMetricConsumer>();
-
     private static Logger logger = Logger.getLogger(SnmpTrapListener.class);
-
     public boolean isRunning() {
         return _running;
     }
-
     private boolean _running;
+
+    private ThreadPool tPool;
+    private Snmp snmpCore;
+    private MultiThreadedMessageDispatcher dispatcher;
+    private static final String port = "1026";
+    private Address listenerAddress;
 
     public SnmpTrapListener(SnmpTrapMonitorConfig cfg) {
         _cfg = cfg;
 
     }
 
-    /** starts the SNMP Trap receiver and will start listening for Events comming in
+    /** starts the SNMP Trap receiver and will start listening for Events coming in
      *
      */
     public void start() {
         _running =true;
         try {
-            logger.debug("started !!!!");
-
-            // TODO :
-            // create a snmp LISTENER (from the example)
-            // first TRY ... LOG OID from trap And the trap Debug message
-
-
-
-            logger.debug("stopped !!!!");
-        }   finally {
+            logger.debug("Started listening on port "+ port + " !!!!");
+            YamlReader reader = new YamlReader(new FileReader("config.yml"));
+            Map message = (Map) reader.read();
+            logger.debug(message.get("message"));
+            //Start listening
+            initialize();
+            snmpCore.addCommandResponder(this);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+        finally {
             _running =false;
         }
+    }
 
+    public void initialize() throws IOException, UnknownHostException {
+        tPool = ThreadPool.create("SNMPTRAP" , 5);
+        dispatcher = new MultiThreadedMessageDispatcher(tPool, new MessageDispatcherImpl());
+        listenerAddress = GenericAddress.parse(System.getProperty("snmp4j.listenAddress", "udp:0.0.0.0/" + port));
+        TransportMapping tMapping = new DefaultUdpTransportMapping((UdpAddress)listenerAddress);
+        snmpCore = new Snmp(dispatcher, tMapping);
+        snmpCore.getMessageDispatcher().addMessageProcessingModel(new MPv1());
+        snmpCore.getMessageDispatcher().addMessageProcessingModel(new MPv2c());
+        snmpCore.listen();
+    }
+
+    @Override
+    public void processPdu(CommandResponderEvent commandResponderEvent) {
+        StringBuffer message = new StringBuffer();
+        logger.debug("TRAP Received !!!!");
+        Vector <VariableBinding> varBindings = commandResponderEvent.getPDU().getVariableBindings();
+        for (VariableBinding vb : varBindings)
+        {
+            message.append(vb.getOid().toString()
+                            + " : "
+                            + vb.getVariable() + "\n");
+        }
+        logger.debug(message);
 
     }
 
@@ -57,5 +103,4 @@ public class SnmpTrapListener {
         if (_consumers.contains(snmpMetricConsumer)) _consumers.remove(snmpMetricConsumer);
 
     }
-
 }
