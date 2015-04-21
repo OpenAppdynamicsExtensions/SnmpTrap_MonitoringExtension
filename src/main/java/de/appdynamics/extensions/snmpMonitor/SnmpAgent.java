@@ -1,7 +1,6 @@
 package de.appdynamics.extensions.snmpMonitor;
 
-import com.esotericsoftware.yamlbeans.YamlException;
-import com.esotericsoftware.yamlbeans.YamlReader;
+
 import com.singularity.ee.agent.systemagent.api.AManagedMonitor;
 import com.singularity.ee.agent.systemagent.api.TaskExecutionContext;
 import com.singularity.ee.agent.systemagent.api.TaskOutput;
@@ -10,7 +9,9 @@ import de.appdynamics.extensions.snmpMonitor.cfg.SnmpEndpointDefinition;
 import de.appdynamics.extensions.snmpMonitor.cfg.SnmpTrapMonitorConfig;
 import de.appdynamics.extensions.snmpMonitor.cfg.TrapConfig;
 import org.apache.log4j.Logger;
+import org.yaml.snakeyaml.Yaml;
 
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.Map;
@@ -57,16 +58,15 @@ public class SnmpAgent extends AManagedMonitor {
 
     private SnmpTrapMonitorConfig readConfig() throws AgentException {
         // TODO:Read a local file to create the cfg
-        YamlReader reader = null;
+       Yaml yaml = new Yaml();
         try {
-            reader = new YamlReader(new FileReader("config.yml"));
-            Map message = (Map) reader.read();
+
+            Map message = (Map) yaml.load(new FileInputStream("config.yml"));
             logger.debug(message.get("message"));
 
+            // TODO: Implement read config and not use mockup config any longer!!!
         } catch (FileNotFoundException e) {
             throw new AgentException("ConfigFile not found!",e);
-        } catch (YamlException e) {
-            throw new AgentException("ConfigFile wrong Format!",e);
         }
 
         return createMockupConfiguration();

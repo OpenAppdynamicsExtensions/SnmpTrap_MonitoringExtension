@@ -1,6 +1,6 @@
 package de.appdynamics.extensions.snmpMonitor;
 
-import com.esotericsoftware.yamlbeans.YamlReader;
+
 import de.appdynamics.extensions.snmpMonitor.cfg.SnmpTrapMonitorConfig;
 import org.apache.log4j.Logger;
 import org.snmp4j.*;
@@ -52,6 +52,8 @@ public class SnmpTrapListener implements CommandResponder{
     public void start() {
         _running =true;
         try {
+
+            // Todo: use the cfg endpoint definition
             logger.debug("Started listening on port "+ port + " !!!!");
 
             //Start listening
@@ -82,6 +84,10 @@ public class SnmpTrapListener implements CommandResponder{
         StringBuffer message = new StringBuffer();
         logger.debug("TRAP Received !!!!");
         Vector <VariableBinding> varBindings = commandResponderEvent.getPDU().getVariableBindings();
+
+        // TODO: only do this if the trap has been configured in cfg.getTraps()...
+        // TODO: specify a trap name in cfg that's used
+
         for (VariableBinding vb : varBindings)
         {
             message.append(vb.getOid().toString()
