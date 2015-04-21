@@ -53,9 +53,7 @@ public class SnmpTrapListener implements CommandResponder{
         _running =true;
         try {
             logger.debug("Started listening on port "+ port + " !!!!");
-            YamlReader reader = new YamlReader(new FileReader("config.yml"));
-            Map message = (Map) reader.read();
-            logger.debug(message.get("message"));
+
             //Start listening
             initialize();
             snmpCore.addCommandResponder(this);
