@@ -33,7 +33,7 @@ public class ConfigTest {
     }
 
     private static SnmpTrapMonitorConfig readConfig() throws AgentException {
-        //TODO :
+
         SnmpTrapMonitorConfig cfg = null;
         Yaml yaml = new Yaml();
         try {
@@ -41,7 +41,7 @@ public class ConfigTest {
             cfg = (SnmpTrapMonitorConfig) yaml.load(new FileInputStream("test.yml"));
 
 
-            // TODO: Implement read config and not use mockup config any longer!!!
+
         } catch (FileNotFoundException e) {
             throw new AgentException("ConfigFile not found!",e);
         }
