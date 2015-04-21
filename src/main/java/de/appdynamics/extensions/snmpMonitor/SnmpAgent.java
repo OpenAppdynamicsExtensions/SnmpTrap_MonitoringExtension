@@ -28,7 +28,13 @@ public class SnmpAgent extends AManagedMonitor {
     @Override
     public TaskOutput execute(Map<String, String> map, TaskExecutionContext taskExecutionContext) throws TaskExecutionException {
         // Read the local config File
-        SnmpTrapMonitorConfig cfg = readConfig();
+        SnmpTrapMonitorConfig cfg = null;
+        try {
+            cfg = readConfig();
+        } catch (AgentException e) {
+            logger.error("Config not found :: "+e.getMessage(),e);
+            return new TaskOutput("ERROR");
+        }
 
         // create and configure the SNMP Tap Listener based on the config
         SnmpTrapListener trapListener = new SnmpTrapListener(cfg);
