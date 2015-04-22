@@ -14,11 +14,9 @@ import org.snmp4j.transport.DefaultUdpTransportMapping;
 import org.snmp4j.util.MultiThreadedMessageDispatcher;
 import org.snmp4j.util.ThreadPool;
 
-import java.io.FileReader;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
@@ -38,9 +36,12 @@ public class SnmpTrapListener implements CommandResponder{
     private ThreadPool tPool;
     private Snmp snmpCore;
     private MultiThreadedMessageDispatcher dispatcher;
-    private static final String port = "1026";
     private Address listenerAddress;
 
+    /**
+     * Constructor
+     * @param cfg Configuration from local config.yml file to start the listener
+     */
     public SnmpTrapListener(SnmpTrapMonitorConfig cfg) {
         _cfg = cfg;
 
@@ -52,10 +53,7 @@ public class SnmpTrapListener implements CommandResponder{
     public void start() {
         _running =true;
         try {
-
-            // Todo: use the cfg endpoint definition
-            logger.debug("Started listening on port "+ port + " !!!!");
-
+            logger.debug("Started listening on port "+ _cfg.getEndpointConfig().getListenerPort() + " !!!!");
             //Start listening
             initialize();
             snmpCore.addCommandResponder(this);
@@ -68,10 +66,19 @@ public class SnmpTrapListener implements CommandResponder{
         }
     }
 
+    /**
+     * Performs the initial configuration for the SNMP trap listener
+     * @throws IOException
+     * @throws UnknownHostException
+     */
     public void initialize() throws IOException, UnknownHostException {
         tPool = ThreadPool.create("SNMPTRAP" , 5);
         dispatcher = new MultiThreadedMessageDispatcher(tPool, new MessageDispatcherImpl());
-        listenerAddress = GenericAddress.parse(System.getProperty("snmp4j.listenAddress", "udp:0.0.0.0/" + port));
+        listenerAddress = GenericAddress.parse(System.getProperty
+                            ("snmp4j.listenAddress", "udp:"
+                                    + _cfg.getEndpointConfig().getListenerAddress()
+                                    + "/"
+                                    + _cfg.getEndpointConfig().getListenerPort()));
         TransportMapping tMapping = new DefaultUdpTransportMapping((UdpAddress)listenerAddress);
         snmpCore = new Snmp(dispatcher, tMapping);
         snmpCore.getMessageDispatcher().addMessageProcessingModel(new MPv1());
