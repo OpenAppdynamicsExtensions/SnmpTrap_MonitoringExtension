@@ -1,10 +1,16 @@
 package de.appdynamics.extensions;
 
+import com.singularity.ee.agent.systemagent.api.TaskExecutionContext;
+import com.singularity.ee.agent.systemagent.api.exception.TaskExecutionException;
 import de.appdynamics.extensions.snmpMonitor.SNMPAgentMetricConsumer;
+import de.appdynamics.extensions.snmpMonitor.SnmpAgent;
 import de.appdynamics.extensions.snmpMonitor.SnmpTrapListener;
 import de.appdynamics.extensions.snmpMonitor.cfg.SnmpEndpointDefinition;
 import de.appdynamics.extensions.snmpMonitor.cfg.SnmpTrapMonitorConfig;
 import de.appdynamics.extensions.snmpMonitor.cfg.TrapConfig;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by stefan.marx on 17.04.15.
@@ -39,7 +45,7 @@ public class LocalTest {
     }
 
     public static void main(String[] args) {
-        // Read the local config File
+       /* // Read the local config File
         SnmpTrapMonitorConfig cfg = createMockupConfiguration();
 
         // create and configure the SNMP Tap Listener based on the config
@@ -47,8 +53,16 @@ public class LocalTest {
         trapListener.start();
 
         // create SNMPMetricEvent consumer
-        trapListener.registerSNMPMetricConsumer(new SNMPAgentMetricConsumer());
+        trapListener.registerSNMPMetricConsumer(new SNMPAgentMetricConsumer());*/
 
-
+        //Test the execute method of SNMP agent
+        SnmpAgent agent = new SnmpAgent();
+        Map <String, String> map = new HashMap<String, String>();
+        TaskExecutionContext t = new TaskExecutionContext();
+        try {
+            agent.execute(map,t);
+        } catch (TaskExecutionException e) {
+            e.printStackTrace();
+        }
     }
 }
