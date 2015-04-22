@@ -4,7 +4,7 @@ endpointConfig:
   SNMPV3Enable: false
   SNMPv1Enable: true
   listenerAddress: 0.0.0.0
-  listenerPort: 9999
+  listenerPort: 1026
 traps:
   .1.2.3.2.3.4.2.3.4.2.1.2502: {}
   .1.2.3.2.3.4.2.3.4.2.1.2501: {}
