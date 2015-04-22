@@ -22,14 +22,17 @@ import java.util.Map;
 public class SnmpAgent extends AManagedMonitor {
     private static Logger logger = Logger.getLogger(SnmpAgent.class);
 
+
     SnmpAgent () {
 
     }
 
     @Override
     public TaskOutput execute(Map<String, String> map, TaskExecutionContext taskExecutionContext) throws TaskExecutionException {
-        // Read the local config File
+        // Local config File place holder
         SnmpTrapMonitorConfig cfg = null;
+
+        //Read the local config file
         try {
             cfg = readConfig();
         } catch (AgentException e) {
@@ -57,19 +60,17 @@ public class SnmpAgent extends AManagedMonitor {
     }
 
     private SnmpTrapMonitorConfig readConfig() throws AgentException {
-        // TODO:Read a local file to create the cfg
        Yaml yaml = new Yaml();
-        try {
+        SnmpTrapMonitorConfig cfg = null;
 
+        try {
+            cfg = (SnmpTrapMonitorConfig) yaml.load(new FileInputStream("config.yml"));
             Map message = (Map) yaml.load(new FileInputStream("config.yml"));
             logger.debug(message.get("message"));
-
-            // TODO: Implement read config and not use mockup config any longer!!!
         } catch (FileNotFoundException e) {
             throw new AgentException("ConfigFile not found!",e);
         }
-
-        return createMockupConfiguration();
+        return cfg;
     }
 
     private SnmpTrapMonitorConfig createMockupConfiguration() {
