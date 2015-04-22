@@ -89,20 +89,19 @@ public class SnmpTrapListener implements CommandResponder{
     @Override
     public void processPdu(CommandResponderEvent commandResponderEvent) {
         StringBuffer message = new StringBuffer();
-        logger.debug("TRAP Received !!!!");
         Vector <VariableBinding> varBindings = commandResponderEvent.getPDU().getVariableBindings();
-
-        // TODO: only do this if the trap has been configured in cfg.getTraps()...
-        // TODO: specify a trap name in cfg that's used
-
         for (VariableBinding vb : varBindings)
         {
-            message.append(vb.getOid().toString()
-                            + " : "
-                            + vb.getVariable() + "\n");
+            //Proceed only if the incoming trap has been configured locally
+            if (_cfg.getTraps().containsKey(vb.getOid().toString()))
+            {
+                message.append("\nTRAP Received !!!!"
+                            + "\n" + "TRAP Name : " + _cfg.getTraps().get(vb.getOid().toString()).get_name()
+                            + "\n" + "TRAP OID : " + vb.getOid().toString()
+                            + "\n" + "TRAP Data : " + vb.getVariable() );
+                logger.debug(message);
+            }
         }
-        logger.debug(message);
-
     }
 
     public void registerSNMPMetricConsumer(SNMPMetricConsumer snmpMetricConsumer) {
