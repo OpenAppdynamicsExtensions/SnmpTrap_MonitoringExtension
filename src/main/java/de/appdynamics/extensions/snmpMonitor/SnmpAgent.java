@@ -31,13 +31,15 @@ public class SnmpAgent extends AManagedMonitor {
 
     @Override
     public TaskOutput execute(Map<String, String> map, TaskExecutionContext taskExecutionContext) throws TaskExecutionException {
+
         // Local config file place holder
         SnmpTrapMonitorConfig cfg = null;
 
         //Read the local config file
         try {
             cfg = readConfig();
-        } catch (AgentException e) {
+        }
+        catch (AgentException e) {
             logger.error("Config not found :: "+e.getMessage(),e);
             return new TaskOutput("ERROR");
         }
@@ -46,9 +48,9 @@ public class SnmpAgent extends AManagedMonitor {
         SnmpTrapListener trapListener = new SnmpTrapListener(cfg);
         trapListener.start();
 
-        // create SNMPMetricEvent consumer
+        // create SNMPMetricEvent consumers
+        trapListener.registerSNMPMetricConsumer(new AppDMachineAgentMetricConsumer());
         trapListener.registerSNMPMetricConsumer(new SNMPAgentMetricConsumer());
-
 
         do {
             try {

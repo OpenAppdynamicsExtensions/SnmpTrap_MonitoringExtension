@@ -96,10 +96,26 @@ public class SnmpTrapListener implements CommandResponder{
             if (_cfg.getTraps().containsKey(vb.getOid().toString()))
             {
                 message.append("\nTRAP Received !!!!"
-                            + "\n" + "TRAP Name : " + _cfg.getTraps().get(vb.getOid().toString()).get_name()
-                            + "\n" + "TRAP OID : " + vb.getOid().toString()
-                            + "\n" + "TRAP Data : " + vb.getVariable() );
-                logger.debug(message);
+                        + "\n" + "TRAP Name : " + _cfg.getTraps().get(vb.getOid().toString()).get_name()
+                        + "\n" + "TRAP OID : " + vb.getOid().toString()
+                        + "\n" + "TRAP Data : " + vb.getVariable());
+                for (SNMPMetricConsumer metricConsumer : _consumers)
+                {
+                    // TODO: Use appropriate Interface implementation methods after talking to Stefan
+                    if (metricConsumer.isMachineAgentConsumer())
+                    {
+                        //Use the interface class method to report metric to Machine agent
+                        metricConsumer.reportMetric(
+                                _cfg.getTraps().get(vb.getOid().toString()).get_name(),
+                                _cfg.getTraps().get(vb.getOid().toString()).get_name(),
+                                1);
+                    }
+                    else
+                    {
+                        //Use the interface class method to report metric to stdout
+                        metricConsumer.reportTrap(message.toString());
+                    }
+                }
             }
         }
     }
