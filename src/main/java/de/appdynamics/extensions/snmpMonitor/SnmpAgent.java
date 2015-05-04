@@ -5,15 +5,12 @@ import com.singularity.ee.agent.systemagent.api.AManagedMonitor;
 import com.singularity.ee.agent.systemagent.api.TaskExecutionContext;
 import com.singularity.ee.agent.systemagent.api.TaskOutput;
 import com.singularity.ee.agent.systemagent.api.exception.TaskExecutionException;
-import de.appdynamics.extensions.snmpMonitor.cfg.SnmpEndpointDefinition;
 import de.appdynamics.extensions.snmpMonitor.cfg.SnmpTrapMonitorConfig;
-import de.appdynamics.extensions.snmpMonitor.cfg.TrapConfig;
 import org.apache.log4j.Logger;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.util.Map;
 
 /**
@@ -49,8 +46,8 @@ public class SnmpAgent extends AManagedMonitor {
         trapListener.start();
 
         // create SNMPMetricEvent consumers
-        trapListener.registerSNMPMetricConsumer(new AppDMachineAgentMetricConsumer());
-        trapListener.registerSNMPMetricConsumer(new SNMPAgentMetricConsumer());
+        trapListener.registerSNMPMetricConsumer(new AppDMachineAgentMetricConsumer(this));
+        trapListener.registerSNMPMetricConsumer(new SNMPAgentMetricLogConsumer());
 
         do {
             try {

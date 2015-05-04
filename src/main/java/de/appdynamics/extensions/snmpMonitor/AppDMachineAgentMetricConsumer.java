@@ -10,11 +10,17 @@ import com.singularity.ee.agent.systemagent.api.AManagedMonitor;
 public class AppDMachineAgentMetricConsumer implements SNMPMetricConsumer{
 
     private static final String metricPrefix = "Custom Metrics|SNMP|";
+    private SnmpAgent _snmpAgent;
+
+    public AppDMachineAgentMetricConsumer(SnmpAgent snmpAgent) {
+
+        _snmpAgent = snmpAgent;
+    }
 
     @Override
     public void reportMetric(String trapName, String metricName, int metric) {
         //TODO: Change implementation after talking to Stefan
-        MetricWriter met = new SnmpAgent().getMetricWriter(metricPrefix + metricName , MetricWriter.METRIC_AGGREGATION_TYPE_SUM);
+        MetricWriter met = _snmpAgent.getMetricWriter(metricPrefix + metricName , MetricWriter.METRIC_AGGREGATION_TYPE_SUM);
         met.printMetric("1");
     }
 

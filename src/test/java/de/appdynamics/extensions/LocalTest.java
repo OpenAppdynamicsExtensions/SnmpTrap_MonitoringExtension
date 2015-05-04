@@ -2,12 +2,7 @@ package de.appdynamics.extensions;
 
 import com.singularity.ee.agent.systemagent.api.TaskExecutionContext;
 import com.singularity.ee.agent.systemagent.api.exception.TaskExecutionException;
-import de.appdynamics.extensions.snmpMonitor.SNMPAgentMetricConsumer;
 import de.appdynamics.extensions.snmpMonitor.SnmpAgent;
-import de.appdynamics.extensions.snmpMonitor.SnmpTrapListener;
-import de.appdynamics.extensions.snmpMonitor.cfg.SnmpEndpointDefinition;
-import de.appdynamics.extensions.snmpMonitor.cfg.SnmpTrapMonitorConfig;
-import de.appdynamics.extensions.snmpMonitor.cfg.TrapConfig;
 
 import java.util.HashMap;
 import java.util.Map;

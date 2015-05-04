@@ -6,19 +6,20 @@ import org.apache.log4j.Logger;
 /**
  * Created by stefan.marx on 17.04.15.
  */
-public class SNMPAgentMetricConsumer implements SNMPMetricConsumer {
-    private Logger logger = Logger.getLogger(SNMPAgentMetricConsumer.class);
+public class SNMPAgentMetricLogConsumer implements SNMPMetricConsumer {
+    private Logger logger = Logger.getLogger(SNMPAgentMetricLogConsumer.class);
 
-    public SNMPAgentMetricConsumer(){}
+    public SNMPAgentMetricLogConsumer(){}
 
     @Override
     public void reportMetric(String trapName, String metricName, int metric) {
 
+        logger.debug("Metrics Extracted: "+metricName+" from Trap "+trapName+" --> "+metric);
     }
 
     @Override
     public void reportTrap(String trapMessage) {
-        logger.debug(trapMessage);
+        logger.debug("Trap Received :"+ trapMessage);
     }
 
     @Override
