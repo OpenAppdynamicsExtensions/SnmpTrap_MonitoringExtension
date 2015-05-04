@@ -99,6 +99,9 @@ public class SnmpTrapListener implements CommandResponder{
                         + "\n" + "TRAP Name : " + _cfg.getTraps().get(vb.getOid().toString()).get_name()
                         + "\n" + "TRAP OID : " + vb.getOid().toString()
                         + "\n" + "TRAP Data : " + vb.getVariable());
+
+                logger.debug(message);
+
                 for (SNMPMetricConsumer metricConsumer : _consumers)
                 {
                     metricConsumer.reportTrap(_cfg.getTraps().get(vb.getOid().toString()).get_name());
