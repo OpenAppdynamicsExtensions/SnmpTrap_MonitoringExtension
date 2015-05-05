@@ -9,6 +9,7 @@ import de.appdynamics.extensions.snmpMonitor.cfg.SnmpTrapMonitorConfig;
 import org.apache.log4j.Logger;
 import org.yaml.snakeyaml.Yaml;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.Map;
@@ -34,7 +35,7 @@ public class SnmpAgent extends AManagedMonitor {
 
         //Read the local config file
         try {
-            cfg = readConfig();
+            cfg = readConfig(taskExecutionContext.getTaskDir());
         }
         catch (AgentException e) {
             logger.error("Config not found :: "+e.getMessage(),e);
@@ -64,13 +65,15 @@ public class SnmpAgent extends AManagedMonitor {
      * Reads trap configuration from config.yml
      * @return
      * @throws AgentException
+     * @param taskDir
      */
-    private SnmpTrapMonitorConfig readConfig() throws AgentException {
+    private SnmpTrapMonitorConfig readConfig(String taskDir) throws AgentException {
        Yaml yaml = new Yaml();
         SnmpTrapMonitorConfig cfg = null;
 
         try {
-            cfg = (SnmpTrapMonitorConfig) yaml.load(new FileInputStream("config.yml"));
+            File dir = new File(taskDir);
+            cfg = (SnmpTrapMonitorConfig) yaml.load(new FileInputStream(new File(dir,"config.yml")));
             //logger.debug(message.get("message"));
         } catch (FileNotFoundException e) {
             throw new AgentException("ConfigFile not found!",e);
