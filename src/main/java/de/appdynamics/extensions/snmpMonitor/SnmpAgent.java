@@ -32,32 +32,28 @@ public class SnmpAgent extends AManagedMonitor {
 
         // Local config file place holder
         SnmpTrapMonitorConfig cfg = null;
-
-        //Read the local config file
         try {
+            //Read the local config file
             cfg = readConfig(taskExecutionContext.getTaskDir());
+
+            // create and configure the SNMP Tap Listener based on the config
+            SnmpTrapListener trapListener = new SnmpTrapListener(cfg);
+            trapListener.start();
+
+            // create SNMPMetricEvent consumers
+            trapListener.registerSNMPMetricConsumer(new AppDMachineAgentMetricConsumer(this));
+            trapListener.registerSNMPMetricConsumer(new SNMPAgentMetricLogConsumer());
+
+            do {
+                Thread.sleep(60000);
+            } while (trapListener.isRunning());
         }
         catch (AgentException e) {
-            logger.error("Config not found :: "+e.getMessage(),e);
+            logger.error("SNMPTrapMonitor Error :: " +e.getMessage(),e);
             return new TaskOutput("ERROR");
         }
-
-        // create and configure the SNMP Tap Listener based on the config
-        SnmpTrapListener trapListener = new SnmpTrapListener(cfg);
-        trapListener.start();
-
-        // create SNMPMetricEvent consumers
-        trapListener.registerSNMPMetricConsumer(new AppDMachineAgentMetricConsumer(this));
-        trapListener.registerSNMPMetricConsumer(new SNMPAgentMetricLogConsumer());
-
-        do {
-            try {
-                Thread.sleep(60000);
-            } catch (InterruptedException e) {
-
-            }
-        } while (trapListener.isRunning());
-
+        catch (InterruptedException e) {
+        }
         return new TaskOutput("Stopped");
     }
 
@@ -72,9 +68,10 @@ public class SnmpAgent extends AManagedMonitor {
         SnmpTrapMonitorConfig cfg = null;
 
         try {
+            //logger.debug(taskDir);
             File dir = new File(taskDir);
             cfg = (SnmpTrapMonitorConfig) yaml.load(new FileInputStream(new File(dir,"config.yml")));
-            //logger.debug(message.get("message"));
+
         } catch (FileNotFoundException e) {
             throw new AgentException("ConfigFile not found!",e);
         }
