@@ -55,53 +55,14 @@ public class SnmpTrapListener implements CommandResponder{
     public void start() throws AgentException {
         _running =true;
         try {
-            //Listen to the port only if it is not already used
-            if (isPortAvailable(_cfg.getEndpointConfig().getListenerAddress(), _cfg.getEndpointConfig().getListenerPort()))
-            {
-                //Start listening
-                initialize();
-                logger.debug("Started listening on port " + _cfg.getEndpointConfig().getListenerPort() + " !!!!");
-                snmpCore.addCommandResponder(this);
-            }
-
+            //Start listening
+            initialize();
+            logger.debug("Started listening on port " + _cfg.getEndpointConfig().getListenerPort() + " !!!!");
+            snmpCore.addCommandResponder(this);
         }
         catch (Exception e){
-            e.printStackTrace();
+            _running = false;
         }
-        finally {
-            _running =false;
-        }
-    }
-
-    /**
-     * Checks if a port is already opened and used
-     * @param UDPAddress
-     * @param port
-     * @return
-     * @throws IOException
-     */
-    private boolean isPortAvailable(String UDPAddress, int port) throws AgentException {
-        ServerSocket soc=null;
-        try {
-            soc = new ServerSocket(port);
-            soc.close();
-            soc=null;
-            return  true;
-        }
-        catch (IOException e)
-        {
-            return false;
-        }
-        /*finally {
-            if (soc!=null)
-            {
-                try {
-                    soc.close();
-                } catch (IOException e) {
-                    throw new AgentException("Error closing socket", e);
-                }
-            }
-        }*/
     }
 
     /**
