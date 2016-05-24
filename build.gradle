@@ -20,9 +20,9 @@ repositories {
     }
     mavenCentral();
 
-//    maven {
-//        url "file:///vlab/maven/private-artifact-library/repo/"
-//    }
+    maven {
+        url "file:///vlab/maven/private-artifact-library/repo/"
+    }
 }
 
 compileJava {
@@ -87,8 +87,6 @@ task packageAgent (type: Zip) {
 }
 
 tasks.assemble.dependsOn(packageAgent)
-
-
 
 
 

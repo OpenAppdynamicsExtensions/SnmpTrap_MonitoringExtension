@@ -52,17 +52,21 @@ public class SnmpTrapListener implements CommandResponder{
     /** starts the SNMP Trap receiver and will start listening for Events coming in
      *
      */
-    public void start() throws AgentException {
+    public void start() {
         _running =true;
         try {
+            logger.debug("Started listening on port "+ _cfg.getEndpointConfig().getListenerPort() + " !!!!");
             //Start listening
             initialize();
-            logger.debug("Started listening on port " + _cfg.getEndpointConfig().getListenerPort() + " !!!!");
             snmpCore.addCommandResponder(this);
         }
         catch (Exception e){
-            _running = false;
+            e.printStackTrace();
+            _running =false;
         }
+
+
+
     }
 
     /**

@@ -3,6 +3,7 @@ JAVA_OPTIONS="-Dappdynamics.agent.applicationName=SNMPTrapMonitor
 -Dappdynamics.controller.hostName=${controllerHost-172.199.0.5}
 -Dappdynamics.controller.port=${controllerPort-8090}
 -Dappdynamics.agent.tierName=SNMP
+-Dappdynamics.agent.uniqueHostId=SNMP1
 -Dappdynamics.agent.nodeName=NodeUTIL
 -Dappdynamics.agent.uniqueHostId=SNMPSandbox
 -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005"
