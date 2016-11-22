@@ -20,6 +20,7 @@ public class SnmpTrapMonitorConfig {
     }
 
 
+
     public SnmpEndpointDefinition getEndpointConfig() {
         return _endpointConfig;
     }
@@ -33,4 +34,6 @@ public class SnmpTrapMonitorConfig {
             _traps.put(trap.getOid(),trap);
         }
     }
+
+
 }

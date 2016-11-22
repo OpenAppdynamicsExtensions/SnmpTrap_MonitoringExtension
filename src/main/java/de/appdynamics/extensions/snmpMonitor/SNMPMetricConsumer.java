@@ -1,5 +1,8 @@
 package de.appdynamics.extensions.snmpMonitor;
 
+import de.appdynamics.extensions.snmpMonitor.cfg.TrapConfig;
+import org.snmp4j.PDU;
+
 /**
  * Created by stefan.marx on 17.04.15.
  */
@@ -14,10 +17,8 @@ public interface SNMPMetricConsumer {
      */
     public void reportMetric(String trapName, String metricName, int metric);
 
-    /** Will report a Trap hit (increase the trap counter by one! )
-     *
-     * @param name Trap Name
-     */
-    public void reportTrap(String name);
+
     public boolean isMachineAgentConsumer();
+
+    public void reportTrap(TrapConfig cfg, PDU pdu);
 }

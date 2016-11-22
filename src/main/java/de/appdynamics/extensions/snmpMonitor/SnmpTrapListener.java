@@ -2,14 +2,12 @@ package de.appdynamics.extensions.snmpMonitor;
 
 
 import de.appdynamics.extensions.snmpMonitor.cfg.SnmpTrapMonitorConfig;
+import de.appdynamics.extensions.snmpMonitor.cfg.TrapConfig;
 import org.apache.log4j.Logger;
 import org.snmp4j.*;
 import org.snmp4j.mp.MPv1;
 import org.snmp4j.mp.MPv2c;
-import org.snmp4j.smi.Address;
-import org.snmp4j.smi.GenericAddress;
-import org.snmp4j.smi.UdpAddress;
-import org.snmp4j.smi.VariableBinding;
+import org.snmp4j.smi.*;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
 import org.snmp4j.util.MultiThreadedMessageDispatcher;
 import org.snmp4j.util.ThreadPool;
@@ -18,9 +16,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.Vector;
+import java.util.*;
 
 /**
  * Created by stefan.marx on 17.04.15.
@@ -40,6 +36,8 @@ public class SnmpTrapListener implements CommandResponder{
     private MultiThreadedMessageDispatcher dispatcher;
     private Address listenerAddress;
 
+
+    public static final OID SNMP_TRAP_OID = new OID("1.3.6.1.6.3.1.1.4.1.0");
     /**
      * Constructor
      * @param cfg Configuration from local config.yml file to start the listener
@@ -92,26 +90,67 @@ public class SnmpTrapListener implements CommandResponder{
     @Override
     public void processPdu(CommandResponderEvent commandResponderEvent) {
         StringBuffer message = new StringBuffer();
-        Vector <VariableBinding> varBindings = commandResponderEvent.getPDU().getVariableBindings();
-        for (VariableBinding vb : varBindings)
-        {
-            //Proceed only if the incoming trap has been configured locally
-            if (_cfg.getTraps().containsKey(vb.getOid().toString()))
-            {
+        int type = commandResponderEvent.getPDU().getType();
+
+        String trap = "";
+        switch (type) {
+            case PDU.V1TRAP:
+                PDUv1 v1pdu = (PDUv1) commandResponderEvent.getPDU();
+
+                trap = v1pdu.getEnterprise().toDottedString();
+                break;
+            case PDU.TRAP:
+                 trap = commandResponderEvent.getPDU().getVariable(SNMP_TRAP_OID).toString();
+
+                break;
+        }
+
+
+        Vector<? extends VariableBinding> bindings = commandResponderEvent.getPDU().getVariableBindings();
+        PDU pdu = commandResponderEvent.getPDU();
+
+        Iterator<TrapConfig> trapConfigs = _cfg.getTraps().values().iterator();
+        while (trapConfigs.hasNext()) {
+            TrapConfig cfg = trapConfigs.next();
+
+            if (trap.equals(cfg.getOid())) {
                 message.append("\nTRAP Received !!!!"
-                        + "\n" + "TRAP Name : " + _cfg.getTraps().get(vb.getOid().toString()).get_name()
-                        + "\n" + "TRAP OID : " + vb.getOid().toString()
-                        + "\n" + "TRAP Data : " + vb.getVariable());
+                        + "\n" + "TRAP Name : " + cfg.getPath()
+                        + "\n" + "TRAP OID : " +  trap );
 
                 logger.debug(message);
 
                 for (SNMPMetricConsumer metricConsumer : _consumers)
                 {
-                    metricConsumer.reportTrap(_cfg.getTraps().get(vb.getOid().toString()).get_name());
+                    metricConsumer.reportTrap(cfg,pdu);
 
                 }
+
             }
         }
+
+
+
+
+//        for (VariableBinding vb : varBindings)
+//        {
+//            //Proceed only if the incoming trap has been configured locally
+//            if (_cfg.getTraps().containsKey(vb.getOid().toString()))
+//            {
+//                message.append("\nTRAP Received !!!!"
+//                        + "\n" + "TRAP Name : " + _cfg.getTraps().get(vb.getOid().toString()).get_name()
+//                        + "\n" + "TRAP OID : " + vb.getOid().toString()
+//                        + "\n" + "TRAP Data : " + vb.getVariable());
+//
+//                logger.debug(message);
+//
+//                for (SNMPMetricConsumer metricConsumer : _consumers)
+//                {
+//                    metricConsumer.reportTrap(_cfg.getTraps().get(vb.getOid().toString()).get_name());
+//
+//                }
+//            }
+//        }
     }
 
     public void registerSNMPMetricConsumer(SNMPMetricConsumer snmpMetricConsumer) {

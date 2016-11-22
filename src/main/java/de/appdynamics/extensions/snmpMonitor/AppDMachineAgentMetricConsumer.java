@@ -1,10 +1,11 @@
 package de.appdynamics.extensions.snmpMonitor;
 
-import com.singularity.ee.agent.commonservices.metricgeneration.metrics.MetricAggregatorType;
 import com.singularity.ee.agent.systemagent.api.MetricWriter;
-import com.singularity.ee.controller.api.constants.MetricClusterRollupType;
-import com.singularity.ee.controller.api.constants.MetricTimeRollupType;
+
+import de.appdynamics.extensions.snmpMonitor.cfg.TrapConfig;
 import org.apache.log4j.Logger;
+import org.snmp4j.PDU;
+import org.snmp4j.smi.OID;
 
 
 /**
@@ -27,20 +28,6 @@ public class AppDMachineAgentMetricConsumer implements SNMPMetricConsumer{
        // TODO: Implement the metrics reporting code
     }
 
-    @Override
-    public synchronized void reportTrap(String name) {
-        /*MetricWriter writer = _snmpAgent.getMetricWriter(getEventsMetricPath(name),
-                                                        MetricAggregatorType.SUM.toString(),
-                                                        MetricTimeRollupType.SUM.toString(),
-                                                        MetricClusterRollupType.COLLECTIVE.toString());*/
-        MetricWriter writer = _snmpAgent.getMetricWriter(getEventsMetricPath(name),
-                                                        MetricWriter.METRIC_AGGREGATION_TYPE_SUM,
-                                                        MetricWriter.METRIC_TIME_ROLLUP_TYPE_SUM,
-                                                        MetricWriter.METRIC_CLUSTER_ROLLUP_TYPE_COLLECTIVE);
-        //MetricWriter writer = _snmpAgent.getMetricWriter(getEventsMetricPath(name));
-        logger.debug("Uploading metric to controller: " + name);
-        writer.printMetric("1");
-    }
 
 
     @Override
@@ -48,8 +35,40 @@ public class AppDMachineAgentMetricConsumer implements SNMPMetricConsumer{
         return true;
     }
 
+    @Override
+    public void reportTrap(TrapConfig cfg, PDU pdu) {
+
+        String fullPath = getEventsMetricPath(SNMPHelper.buildBath(cfg.getPath(), pdu));
+        if (cfg.isPersistent()) {
+            PersistentCache pCache = PersistentCache.getDefault();
+            Integer oldValue = pCache.savePersistentValue(fullPath
+                    , cfg.getPersistentValue());
+
+            if (oldValue != null && oldValue.equals(cfg.getPersistentValue())) {
+                logger.debug("Persistent Value allready set : "+fullPath + " == "+ oldValue);
+
+            } else {
+                logger.debug("Value Set :"+fullPath+" -- "+cfg.getPersistentValue());
+            }
+
+
+
+
+
+        } else {
+            MetricWriter writer = _snmpAgent.getMetricWriter(fullPath,
+                    MetricWriter.METRIC_AGGREGATION_TYPE_SUM,
+                    MetricWriter.METRIC_TIME_ROLLUP_TYPE_SUM,
+                    MetricWriter.METRIC_CLUSTER_ROLLUP_TYPE_COLLECTIVE);
+            logger.debug("Uploading metric to controller: " + fullPath);
+            writer.printMetric("1");
+        }
+    }
+
 
     private String getEventsMetricPath(String trapName) {
         return METRIC_PREFIX + METRIC_SEP + trapName + METRIC_SEP + EVENTS;
     }
+
+
 }

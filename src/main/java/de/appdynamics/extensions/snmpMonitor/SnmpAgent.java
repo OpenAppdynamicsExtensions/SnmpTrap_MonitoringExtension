@@ -2,6 +2,7 @@ package de.appdynamics.extensions.snmpMonitor;
 
 
 import com.singularity.ee.agent.systemagent.api.AManagedMonitor;
+import com.singularity.ee.agent.systemagent.api.MetricWriter;
 import com.singularity.ee.agent.systemagent.api.TaskExecutionContext;
 import com.singularity.ee.agent.systemagent.api.TaskOutput;
 import com.singularity.ee.agent.systemagent.api.exception.TaskExecutionException;
@@ -13,6 +14,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by stefan.marx on 17.04.15.
@@ -46,6 +48,8 @@ public class SnmpAgent extends AManagedMonitor {
 
             do {
                 Thread.sleep(60000);
+                // once a minute Stream persistent Cache
+                writePersistentValues();
             } while (trapListener.isRunning());
         }
         catch (AgentException e) {
@@ -55,6 +59,21 @@ public class SnmpAgent extends AManagedMonitor {
         catch (InterruptedException e) {
         }
         return new TaskOutput("Stopped");
+    }
+
+    private void writePersistentValues() {
+        PersistentCache pCache = PersistentCache.getDefault();
+        Set<Map.Entry<String, Integer>> entries = pCache.getEntries();
+
+        for (Map.Entry<String,Integer> k : entries) {
+            MetricWriter writer = getMetricWriter(k.getKey(),
+                    MetricWriter.METRIC_AGGREGATION_TYPE_OBSERVATION,
+                    MetricWriter.METRIC_TIME_ROLLUP_TYPE_AVERAGE,
+                    MetricWriter.METRIC_CLUSTER_ROLLUP_TYPE_COLLECTIVE);
+            logger.debug("Uploading persistent metric to controller: " + k.getKey() +" == "+k.getValue());
+            writer.printMetric(k.getValue().toString());
+        }
+
     }
 
     /**

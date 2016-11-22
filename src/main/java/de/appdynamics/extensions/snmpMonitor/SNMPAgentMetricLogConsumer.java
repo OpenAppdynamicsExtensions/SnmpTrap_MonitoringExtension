@@ -1,7 +1,9 @@
 package de.appdynamics.extensions.snmpMonitor;
 
 
+import de.appdynamics.extensions.snmpMonitor.cfg.TrapConfig;
 import org.apache.log4j.Logger;
+import org.snmp4j.PDU;
 
 /**
  * Created by stefan.marx on 17.04.15.
@@ -17,13 +19,15 @@ public class SNMPAgentMetricLogConsumer implements SNMPMetricConsumer {
         logger.debug("Metrics Extracted: "+metricName+" from Trap "+trapName+" --> "+metric);
     }
 
-    @Override
-    public void reportTrap(String trapMessage) {
-        logger.debug("Trap Received :"+ trapMessage);
-    }
 
     @Override
     public boolean isMachineAgentConsumer() {
         return false;
+    }
+
+    @Override
+    public void reportTrap(TrapConfig cfg, PDU pdu) {
+        logger.debug("Trap Received :"+ SNMPHelper.buildBath(cfg.getPath(),pdu));
+        logger.debug("TRAP:"+pdu.toString());
     }
 }

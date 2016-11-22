@@ -6,12 +6,13 @@ package de.appdynamics.extensions.snmpMonitor.cfg;
 public class TrapConfig {
 
     private String _oid;
-    private String _name;
+    private String _path;
+    private Integer persistentValue;
 
     public TrapConfig() {}
-    public TrapConfig(String trapOid, String trapName) {
+    public TrapConfig(String trapOid, String trapPath) {
         _oid = trapOid;
-        set_name(trapName);
+        setPath(trapPath);
     }
 
     public String getOid() {
@@ -22,11 +23,23 @@ public class TrapConfig {
         _oid = oid;
     }
 
-    public String get_name() {
-        return _name;
+    public String getPath() {
+        return _path;
     }
 
-    public void set_name(String _name) {
-        this._name = _name;
+    public void setPath(String path) {
+        this._path = path;
+    }
+
+    public Integer getPersistentValue() {
+        return persistentValue;
+    }
+
+    public void setPersistentValue(Integer persistentValue) {
+        this.persistentValue = persistentValue;
+    }
+
+    public boolean isPersistent() {
+        return persistentValue!=null;
     }
 }
