@@ -106,6 +106,19 @@ public class SnmpTrapListener implements CommandResponder{
         }
 
 
+
+        message.append("\nTRAP Received !!!!"
+                + "\n" + "TRAP OID : " +  trap +"\n");
+
+        for (VariableBinding v : commandResponderEvent.getPDU().getVariableBindings()) {
+            message.append(v.getOid().toString())
+                    .append("  : ")
+                    .append(v.getVariable().toString())
+                    .append("\n");
+        }
+
+        logger.debug(message);
+
         Vector<? extends VariableBinding> bindings = commandResponderEvent.getPDU().getVariableBindings();
         PDU pdu = commandResponderEvent.getPDU();
 
@@ -114,11 +127,7 @@ public class SnmpTrapListener implements CommandResponder{
             TrapConfig cfg = trapConfigs.next();
 
             if (trap.equals(cfg.getOid())) {
-                message.append("\nTRAP Received !!!!"
-                        + "\n" + "TRAP Name : " + cfg.getPath()
-                        + "\n" + "TRAP OID : " +  trap );
 
-                logger.debug(message);
 
                 for (SNMPMetricConsumer metricConsumer : _consumers)
                 {

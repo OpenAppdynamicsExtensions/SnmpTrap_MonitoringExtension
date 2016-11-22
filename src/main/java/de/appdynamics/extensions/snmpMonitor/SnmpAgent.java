@@ -44,7 +44,7 @@ public class SnmpAgent extends AManagedMonitor {
 
             // create SNMPMetricEvent consumers
             trapListener.registerSNMPMetricConsumer(new AppDMachineAgentMetricConsumer(this));
-            trapListener.registerSNMPMetricConsumer(new SNMPAgentMetricLogConsumer());
+           // trapListener.registerSNMPMetricConsumer(new SNMPAgentMetricLogConsumer());
 
             do {
                 Thread.sleep(60000);
