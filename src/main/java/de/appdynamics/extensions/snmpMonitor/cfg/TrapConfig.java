@@ -64,6 +64,6 @@ public class TrapConfig {
     @Override
     public String toString() {
         return "- :"+_oid+"  --> "+_path+
-                ((isPersistent())?"Persistent ("+persistentValue+")":"");
+                ((isPersistent())?"  Persistent ("+persistentValue+")":"");
     }
 }

@@ -27,7 +27,7 @@ public class LocalTest {
         SnmpAgent agent = new SnmpAgent();
         Map <String, String> map = new HashMap<String, String>();
         TaskExecutionContext t = new TaskExecutionContext();
-        t.setTaskDir("./");
+        t.setTaskDir("./src/main/config");
         try {
             agent.execute(map,t);
         } catch (TaskExecutionException e) {
