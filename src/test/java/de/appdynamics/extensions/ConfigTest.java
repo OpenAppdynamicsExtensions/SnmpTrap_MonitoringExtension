@@ -4,6 +4,7 @@ import de.appdynamics.extensions.snmpMonitor.AgentException;
 import de.appdynamics.extensions.snmpMonitor.cfg.SnmpEndpointDefinition;
 import de.appdynamics.extensions.snmpMonitor.cfg.SnmpTrapMonitorConfig;
 import de.appdynamics.extensions.snmpMonitor.cfg.TrapConfig;
+import de.appdynamics.extensions.snmpMonitor.cfg.TrapConfigPersistentFilter;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
@@ -38,7 +39,8 @@ public class ConfigTest {
         Yaml yaml = new Yaml();
         try {
 
-            cfg = (SnmpTrapMonitorConfig) yaml.load(new FileInputStream("test.yml"));
+            cfg = (SnmpTrapMonitorConfig) yaml.load(new FileInputStream("./src/test/cfg/test.yml"));
+
 
 
 
@@ -86,6 +88,11 @@ public class ConfigTest {
 
 
         trap = new TrapConfig("1.2.3.2.3.4.2.3.4.2.1.2502" , "Met2502");
+        trap.setPersistentFilter(new TrapConfigPersistentFilter());
+        trap.getPersistentFilter().addFilter("Green",0);
+        trap.getPersistentFilter().addFilter("Red",2);
+        trap.getPersistentFilter().addFilter("Yellow",1);
+
         cfg.addTrapConfig(trap);
 
         return cfg;

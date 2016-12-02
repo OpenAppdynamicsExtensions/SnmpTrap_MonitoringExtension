@@ -5,7 +5,6 @@ import com.singularity.ee.agent.systemagent.api.MetricWriter;
 import de.appdynamics.extensions.snmpMonitor.cfg.TrapConfig;
 import org.apache.log4j.Logger;
 import org.snmp4j.PDU;
-import org.snmp4j.smi.OID;
 
 
 /**
@@ -41,14 +40,16 @@ public class AppDMachineAgentMetricConsumer implements SNMPMetricConsumer{
         String fullPath = getEventsMetricPath(SNMPHelper.buildBath(cfg.getPath(), pdu));
         if (cfg.isPersistent()) {
             PersistentCache pCache = PersistentCache.getDefault();
-            Integer oldValue = pCache.savePersistentValue(fullPath
-                    , cfg.getPersistentValue());
+            Integer newValue = cfg.getPersistentValue(pdu);
 
-            if (oldValue != null && oldValue.equals(cfg.getPersistentValue())) {
+            Integer oldValue = pCache.savePersistentValue(fullPath
+                    , newValue);
+
+            if (oldValue != null && oldValue.equals(newValue)) {
                 logger.debug("Persistent Value allready set : "+fullPath + " == "+ oldValue);
 
             } else {
-                logger.debug("Value Set :"+fullPath+" -- "+cfg.getPersistentValue());
+                logger.debug("Value Set :"+fullPath+" -- "+newValue);
             }
 
 
@@ -67,7 +68,7 @@ public class AppDMachineAgentMetricConsumer implements SNMPMetricConsumer{
 
 
     private String getEventsMetricPath(String trapName) {
-        return METRIC_PREFIX + METRIC_SEP + trapName + METRIC_SEP + EVENTS;
+        return METRIC_PREFIX + METRIC_SEP + trapName ;
     }
 
 

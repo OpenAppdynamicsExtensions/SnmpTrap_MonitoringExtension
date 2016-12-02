@@ -49,4 +49,15 @@ public class SnmpEndpointDefinition {
     public boolean isSNMPV3Enable() {
         return _SNMPV3Enable;
     }
+
+    @Override
+    public String toString() {
+        return "Listening on :" +_listenerAddress+":"+_listenerPort+"\n"
+                + ((_SNMPv1Enable)?"V1 enabled":"V1 not enabled")
+                + ((_SNMPV2Enable)?"V2 enabled":"V2 not enabled" )
+                + ((_SNMPV3Enable)?"V13 enabled":"V3 not enabled ") +
+                "\n";
+
+
+    }
 }

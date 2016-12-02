@@ -14,7 +14,10 @@ public class SNMPHelper {
             if (!part.matches("^\\d+(\\.\\d+)+$")) {
                 erg += part;
             }  else {
-                erg += pdu.getVariable(new OID(part));
+                if (pdu.getVariable(new OID(part)) == null || pdu.getVariable(new OID(part)).toString().equals(""))
+                    erg += "default";
+                else
+                    erg += pdu.getVariable(new OID(part));
             }
         }
 

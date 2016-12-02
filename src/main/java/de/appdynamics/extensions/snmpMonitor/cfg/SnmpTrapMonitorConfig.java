@@ -35,5 +35,14 @@ public class SnmpTrapMonitorConfig {
         }
     }
 
-
+    @Override
+    public String toString() {
+        StringBuffer b = new StringBuffer("SNMPTrapConfig");
+        b.append(_endpointConfig)
+                .append("\nTraps:\n");
+        for (TrapConfig tc : getTraps().values()) {
+            b.append(tc).append("\n");
+        }
+        return b.toString();
+    }
 }

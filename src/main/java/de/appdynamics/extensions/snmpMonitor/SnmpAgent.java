@@ -26,6 +26,7 @@ public class SnmpAgent extends AManagedMonitor {
      * Empty constructor
      */
     public SnmpAgent () {
+        logger.debug("Agent created.");
 
     }
 
@@ -35,15 +36,20 @@ public class SnmpAgent extends AManagedMonitor {
         // Local config file place holder
         SnmpTrapMonitorConfig cfg = null;
         try {
+            logger.debug("Starting Agent, Reading Config!");
             //Read the local config file
             cfg = readConfig(taskExecutionContext.getTaskDir());
+            logger.debug("CFG Read:\n"+cfg);
 
+            logger.debug("Starting TrapListener");
             // create and configure the SNMP Tap Listener based on the config
             SnmpTrapListener trapListener = new SnmpTrapListener(cfg);
             trapListener.start();
 
+            logger.debug("Trap Listener Started, registering TrapListeners.");
             // create SNMPMetricEvent consumers
             trapListener.registerSNMPMetricConsumer(new AppDMachineAgentMetricConsumer(this));
+
            // trapListener.registerSNMPMetricConsumer(new SNMPAgentMetricLogConsumer());
 
             do {
